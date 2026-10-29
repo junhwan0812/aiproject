@@ -5,3 +5,5 @@ b=st.selectbox('좋아하는 음식을 입력하세요',['타코야끼','김치�
 if st.button('인사말 생성'):
  st.write('반갑습니다')
  st.info(a+'님 안녕하세요')
+ st.warning(b+'를 좋아하시네요')
+ st.error('잘부탁드립니다')
