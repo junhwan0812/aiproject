@@ -1,4 +1,5 @@
 
+import streamlit as st
 import folium
 from streamlit_folium import st_folium
 
@@ -42,7 +43,7 @@ PLACES = [
         "lat": 37.5116,
         "lon": 127.0591,
         "category": "쇼핑·문화",
-        "desc": "대형 쇼핑몰과 독특한 책장으로 유명한 별마당도서관이 있는 복합문화공간입니다.",
+        "desc": "대형 쇼핑몰과 독특한 책장으로 유명한 복합문화공간입니다.",
         "tip": "쇼핑과 문화 체험을 함께 즐겨 보세요."
     },
     {
@@ -72,7 +73,7 @@ PLACES = [
         "lat": 37.5445,
         "lon": 127.0560,
         "category": "카페·트렌드",
-        "desc": "감각적인 카페와 편집숍, 팝업스토어로 유명한 트렌디한 지역입니다.",
+        "desc": "감각적인 카페와 편집숍, 팝업스토어로 유명한 지역입니다.",
         "tip": "골목마다 개성 있는 카페를 찾아보세요."
     },
     {
@@ -121,6 +122,7 @@ PLACES = [
 # 3. 웹사이트 제목
 # --------------------------------
 st.title("🗺️ 서울 외국인 인기 관광지 TOP 10")
+
 st.write(
     "서울을 방문하는 외국인 관광객을 위한 "
     "서울의 대표 관광지 10곳을 소개합니다! 🇰🇷"
@@ -163,7 +165,7 @@ seoul_map = folium.Map(
     control_scale=True
 )
 
-# 관광지 마커 추가
+# 관광지 마커 표시
 for place in visible_places:
 
     popup_content = f"""
@@ -209,7 +211,9 @@ for place in visible_places:
         )
     ).add_to(seoul_map)
 
-# 지도 화면 출력
+# --------------------------------
+# 6. 지도 화면 출력
+# --------------------------------
 st_folium(
     seoul_map,
     width=None,
@@ -218,7 +222,7 @@ st_folium(
 )
 
 # --------------------------------
-# 6. 관광지 설명
+# 7. 관광지 설명
 # --------------------------------
 st.divider()
 
@@ -228,7 +232,6 @@ st.write(
     "관광지를 선택해 간단한 설명과 여행 팁을 확인해 보세요!"
 )
 
-# 두 개씩 나누어 표시
 for start in range(0, len(visible_places), 2):
 
     columns = st.columns(2)
@@ -267,7 +270,7 @@ for start in range(0, len(visible_places), 2):
                 )
 
 # --------------------------------
-# 7. 하단 안내
+# 8. 하단 안내
 # --------------------------------
 st.divider()
 
@@ -278,8 +281,6 @@ st.markdown(
     서울의 다양한 문화와 음식, 역사와 현대적인
     매력을 경험해 보세요.
 
-    자료 참고:
-    - [Visit Seoul 공식 관광정보](https://english.visitseoul.net/)
-    - [서울시 외국인 관광객 분석](https://english.seoul.go.kr/)
+    [Visit Seoul 공식 관광정보](https://english.visitseoul.net/)
     """
 )
