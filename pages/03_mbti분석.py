@@ -414,7 +414,181 @@ st.caption(
 
 
 # ==========================================
-# 11. MBTI 순위표
+# 11. MBTI별 국가 순위 분석
+# ==========================================
+
+st.divider()
+
+st.title("🌎 MBTI별 국가 순위 분석")
+
+st.write(
+    "원하는 MBTI 유형을 선택하면 해당 유형의 비율이 "
+    "높은 국가부터 순서대로 보여줍니다!"
+)
+
+# MBTI 선택 메뉴
+selected_mbti = st.selectbox(
+    "🧠 분석할 MBTI 유형을 선택하세요",
+    options=mbti_columns,
+    key="country_ranking_mbti"
+)
+
+# 선택한 MBTI의 모든 국가 데이터 가져오기
+country_ranking = df[["Country", selected_mbti]].copy()
+
+# 숫자 데이터로 변환
+country_ranking[selected_mbti] = pd.to_numeric(
+    country_ranking[selected_mbti],
+    errors="coerce"
+)
+
+# 비율을 백분율로 변환
+if country_ranking[selected_mbti].max() <= 1:
+    country_ranking[selected_mbti] *= 100
+
+# 높은 비율부터 정렬
+country_ranking = country_ranking.sort_values(
+    by=selected_mbti,
+    ascending=False
+).reset_index(drop=True)
+
+# 순위 추가
+country_ranking.insert(
+    0,
+    "순위",
+    range(1, len(country_ranking) + 1)
+)
+
+# 상위 국가 개수 선택
+display_count = st.slider(
+    "📊 그래프에 표시할 국가 수",
+    min_value=10,
+    max_value=len(country_ranking),
+    value=min(20, len(country_ranking)),
+    step=1
+)
+
+# 선택한 개수만큼 표시
+top_countries = country_ranking.head(display_count)
+
+# 1위 국가 정보
+first_country = country_ranking.iloc[0]["Country"]
+first_rate = country_ranking.iloc[0][selected_mbti]
+
+# 핵심 결과
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric(
+        "🥇 1위 국가",
+        first_country
+    )
+
+with col2:
+    st.metric(
+        "🧠 선택한 MBTI",
+        selected_mbti
+    )
+
+with col3:
+    st.metric(
+        "📈 1위 비율",
+        f"{first_rate:.2f}%"
+    )
+
+st.subheader(
+    f"🏆 {selected_mbti} 비율 국가 순위"
+)
+
+# 색상 설정
+ranking_colors = (
+    ["#16A34A"] +
+    make_blue_gradient(len(top_countries) - 1)
+)
+
+# 그래프 생성
+ranking_fig = go.Figure()
+
+ranking_fig.add_trace(
+    go.Bar(
+        x=top_countries[selected_mbti],
+        y=top_countries["Country"],
+        orientation="h",
+
+        marker=dict(
+            color=ranking_colors
+        ),
+
+        text=[
+            f"{value:.2f}%"
+            for value in top_countries[selected_mbti]
+        ],
+
+        textposition="outside",
+
+        hovertemplate=(
+            "<b>%{y}</b><br>"
+            "비율: %{x:.2f}%"
+            "<extra></extra>"
+        )
+    )
+)
+
+ranking_fig.update_layout(
+    height=max(500, display_count * 30),
+
+    xaxis_title=f"{selected_mbti} 비율 (%)",
+    yaxis_title="국가",
+
+    yaxis=dict(
+        autorange="reversed"
+    ),
+
+    xaxis=dict(
+        rangemode="tozero"
+    ),
+
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+
+    margin=dict(
+        l=30,
+        r=70,
+        t=30,
+        b=50
+    ),
+
+    showlegend=False
+)
+
+# 그래프 출력
+st.plotly_chart(
+    ranking_fig,
+    use_container_width=True
+)
+
+st.caption(
+    "🟢 초록색은 1위 국가이며, 🔵 파란색은 "
+    "2위부터 순서대로 표시됩니다."
+)
+
+# 전체 국가 순위표
+with st.expander("📋 전체 국가 순위표 보기"):
+
+    st.dataframe(
+        country_ranking.rename(
+            columns={
+                selected_mbti: "MBTI 비율(%)"
+            }
+        ).style.format({
+            "MBTI 비율(%)": "{:.2f}%"
+        }),
+        use_container_width=True,
+        hide_index=True
+    )
+
+# ==========================================
+# 12. MBTI 순위표
 # ==========================================
 
 st.divider()
@@ -446,7 +620,7 @@ with st.expander("📋 MBTI 전체 순위 확인하기"):
 
 
 # ==========================================
-# 12. 데이터 안내
+# 13. 데이터 안내
 # ==========================================
 
 st.divider()
