@@ -321,3 +321,8 @@ st.caption(
     "📊 서울시 인구 통계 분석 | "
     "데이터 출처: 제공된 population.csv"
 )
+data = pd.read_csv(
+    "population.csv",
+    encoding="cp949",
+    thousands=","
+)
