@@ -34,7 +34,7 @@ df = load_data()
 
 if df is None:
     st.error(
-        "temperature(1).csv 파일을 찾을 수 없습니다. "
+        "temperature.csv 파일을 찾을 수 없습니다. "
         "CSV 파일을 app.py와 같은 폴더에 넣어 주세요."
     )
     st.stop()
