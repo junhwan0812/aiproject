@@ -346,3 +346,88 @@ st.caption(
     f"기온 데이터가 없는 {missing_count:,}개는 "
     "그래프에서 제외했습니다."
 )
+
+@st.cache_data
+def load_data():
+
+    # 현재 파이썬 파일의 위치
+    current_file = Path(__file__).resolve()
+
+    # CSV 파일을 찾을 폴더 목록
+    search_dirs = [
+        current_file.parent,
+        current_file.parent.parent,
+        Path.cwd(),
+        Path.cwd().parent
+    ]
+
+    # 중복 폴더 제거
+    search_dirs = list(dict.fromkeys(search_dirs))
+
+    file_path = None
+
+    # 1차: 정확한 파일명 검색
+    for folder in search_dirs:
+        candidate = folder / "temperature(1).csv"
+
+        if candidate.is_file():
+            file_path = candidate
+            break
+
+    # 2차: 파일명이 조금 다를 경우 temperature로 시작하는 CSV 검색
+    if file_path is None:
+        for folder in search_dirs:
+            if folder.is_dir():
+                matches = [
+                    p for p in folder.iterdir()
+                    if p.is_file()
+                    and p.name.lower().startswith("temperature")
+                    and p.suffix.lower() == ".csv"
+                ]
+
+                if len(matches) == 1:
+                    file_path = matches[0]
+                    break
+
+    # 파일을 찾지 못한 경우
+    if file_path is None:
+        st.error("CSV 파일을 찾을 수 없습니다.")
+
+        st.write("현재 파이썬 파일 위치:")
+        st.code(str(current_file))
+
+        st.write("현재 실행 위치:")
+        st.code(str(Path.cwd()))
+
+        st.write("검색한 폴더:")
+        for folder in search_dirs:
+            st.write(str(folder))
+
+            if folder.is_dir():
+                st.write([
+                    p.name for p in folder.iterdir()
+                    if p.is_file()
+                ])
+
+        return None
+
+    # CSV 인코딩 처리
+    try:
+        data = pd.read_csv(
+            file_path,
+            encoding="cp949"
+        )
+
+    except UnicodeDecodeError:
+        data = pd.read_csv(
+            file_path,
+            encoding="utf-8-sig"
+        )
+
+    return data
+
+
+df = load_data()
+
+if df is None:
+    st.stop()
