@@ -12,12 +12,12 @@ from sklearn.linear_model import LinearRegression
 # ==========================================
 
 st.set_page_config(
-    page_title="서울 평균기온 예측 ",
+    page_title="서울 월별 평균기온 예측 ",
     page_icon="🌡️",
     layout="wide"
 )
 
-st.title("🌡️ 서울의 미래 평균기온 예측 ")
+st.title("🌡️ 서울 월별 평균기온 예측 ")
 st.markdown("""
 과거 서울의 평균기온 데이터를 분석하여
 미래의 월별 평균기온을 예측해 보세요! 🔮
