@@ -1,0 +1,294 @@
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+
+
+# ---------------------------------
+# 1. 페이지 설정
+# ---------------------------------
+st.set_page_config(
+    page_title="붓꽃 품종 예측",
+    page_icon="🌸",
+    layout="wide"
+)
+
+st.title("🌸 붓꽃(Iris) 품종 예측 프로그램")
+st.write(
+    "꽃잎의 길이와 너비를 입력하면 "
+    "머신러닝 알고리즘이 붓꽃의 품종을 예측합니다."
+)
+
+st.divider()
+
+
+# ---------------------------------
+# 2. CSV 데이터 불러오기
+# ---------------------------------
+@st.cache_data
+def load_data():
+    file_path = Path(__file__).parent / "Iris.csv"
+
+    df = pd.read_csv(file_path, encoding="cp949")
+
+    # 컬럼 이름의 앞뒤 공백 제거
+    df.columns = df.columns.str.strip()
+
+    return df
+
+
+try:
+    df = load_data()
+
+except Exception as e:
+    st.error("Iris.csv 파일을 찾을 수 없습니다.")
+    st.write("Iris.csv 파일을 app.py와 같은 폴더에 넣어 주세요.")
+    st.stop()
+
+
+# 사용할 변수
+features = ["꽃잎 길이", "꽃잎 너비"]
+target = "품종"
+
+# 숫자형 데이터 확인
+df[features] = df[features].apply(
+    pd.to_numeric, errors="coerce"
+)
+
+df = df.dropna(subset=features + [target])
+
+
+# ---------------------------------
+# 3. 데이터 범위 계산
+# ---------------------------------
+length_min = float(df["꽃잎 길이"].min())
+length_max = float(df["꽃잎 길이"].max())
+
+width_min = float(df["꽃잎 너비"].min())
+width_max = float(df["꽃잎 너비"].max())
+
+
+# ---------------------------------
+# 4. 머신러닝 모델 학습
+# ---------------------------------
+@st.cache_resource
+def train_model(data):
+
+    X = data[features]
+    y = data[target]
+
+    # 학습용 / 테스트용 데이터 분리
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=0.2,
+        random_state=42,
+        stratify=y
+    )
+
+    # SVM 모델 생성
+    model = Pipeline([
+        ("scaler", StandardScaler()),
+        ("svm", SVC(kernel="rbf"))
+    ])
+
+    # 학습
+    model.fit(X_train, y_train)
+
+    # 정확도 평가
+    predictions = model.predict(X_test)
+    accuracy = accuracy_score(y_test, predictions)
+
+    # 전체 데이터로 최종 모델 재학습
+    model.fit(X, y)
+
+    return model, accuracy
+
+
+model, accuracy = train_model(df)
+
+
+# ---------------------------------
+# 5. 알고리즘 설명
+# ---------------------------------
+with st.expander("🤖 사용된 머신러닝 알고리즘 알아보기"):
+
+    st.write("**알고리즘: 서포트 벡터 머신(SVM)**")
+
+    st.write("""
+    SVM은 데이터를 여러 종류로 분류하는 머신러닝 알고리즘입니다.
+
+    꽃잎의 길이와 너비를 이용하여
+    세 가지 붓꽃 품종을 구분합니다.
+
+    이번 프로그램에서는 RBF 커널을 사용하여
+    데이터 사이의 비선형적인 관계도 학습하도록 했습니다.
+
+    StandardScaler를 이용해 입력 변수의 크기도 표준화합니다.
+    """)
+
+    st.metric(
+        "테스트 데이터 예측 정확도",
+        f"{accuracy * 100:.2f}%"
+    )
+
+
+st.divider()
+
+
+# ---------------------------------
+# 6. 사용자 입력
+# ---------------------------------
+st.subheader("✏️ 꽃잎 크기 입력하기")
+
+st.info(
+    f"""
+    📏 입력 가능한 범위
+
+    - 꽃잎 길이: {length_min:.1f}cm ~ {length_max:.1f}cm
+    - 꽃잎 너비: {width_min:.1f}cm ~ {width_max:.1f}cm
+    """
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    petal_length = st.number_input(
+        "🌷 꽃잎 길이 (cm)",
+        min_value=length_min,
+        max_value=length_max,
+        value=5.0,
+        step=0.1,
+        format="%.1f"
+    )
+
+with col2:
+    petal_width = st.number_input(
+        "🌷 꽃잎 너비 (cm)",
+        min_value=width_min,
+        max_value=width_max,
+        value=1.5,
+        step=0.1,
+        format="%.1f"
+    )
+
+
+# ---------------------------------
+# 7. 품종 예측
+# ---------------------------------
+input_data = pd.DataFrame(
+    [[petal_length, petal_width]],
+    columns=features
+)
+
+prediction = model.predict(input_data)[0]
+
+st.subheader("🔍 품종 예측 결과")
+
+species_names = {
+    "Iris-setosa": "세토사 (Setosa)",
+    "Iris-versicolor": "버시컬러 (Versicolor)",
+    "Iris-virginica": "버지니카 (Virginica)"
+}
+
+st.success(
+    f"🌸 예측된 붓꽃 품종: {species_names.get(prediction, prediction)}"
+)
+
+st.write(f"입력한 꽃잎 길이: **{petal_length:.1f}cm**")
+st.write(f"입력한 꽃잎 너비: **{petal_width:.1f}cm**")
+
+
+# ---------------------------------
+# 8. 산점도 그래프
+# ---------------------------------
+st.divider()
+
+st.subheader("📊 꽃잎 크기 산점도")
+
+st.write(
+    "기존 붓꽃 데이터는 품종별로 색상을 구분하고, "
+    "사용자가 입력한 값은 초록색 별로 표시합니다."
+)
+
+fig = px.scatter(
+    df,
+    x="꽃잎 길이",
+    y="꽃잎 너비",
+    color="품종",
+    hover_data=["품종"],
+    title="붓꽃 품종별 꽃잎 크기 비교",
+    labels={
+        "꽃잎 길이": "꽃잎 길이 (cm)",
+        "꽃잎 너비": "꽃잎 너비 (cm)"
+    }
+)
+
+# 사용자 입력값을 초록색 별로 표시
+fig.add_trace(
+    go.Scatter(
+        x=[petal_length],
+        y=[petal_width],
+        mode="markers",
+        name="사용자 입력값",
+        marker=dict(
+            symbol="star",
+            size=22,
+            color="green",
+            line=dict(
+                color="black",
+                width=1
+            )
+        )
+    )
+)
+
+fig.update_layout(
+    height=550,
+    xaxis_title="꽃잎 길이 (cm)",
+    yaxis_title="꽃잎 너비 (cm)",
+    legend_title="품종",
+    hovermode="closest"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+
+
+# ---------------------------------
+# 9. 데이터 정보
+# ---------------------------------
+with st.expander("📚 학습 데이터 확인하기"):
+
+    st.write("전체 데이터 개수:", len(df))
+
+    st.write("품종별 데이터 개수")
+
+    st.dataframe(
+        df[target].value_counts().rename("개수")
+    )
+
+    st.write("학습에 사용한 데이터")
+
+    st.dataframe(df, use_container_width=True)
+
+
+# ---------------------------------
+# 10. 마무리
+# ---------------------------------
+st.divider()
+
+st.caption(
+    "🌸 Iris Machine Learning Project | "
+    "Python + Pandas + Scikit-learn + Streamlit"
+)
