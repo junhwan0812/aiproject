@@ -337,7 +337,7 @@ def 회사표시명(회사명):
 # 5. CSV 파일 불러오기
 # =========================================================
 
-DATA_FILE = Path(__file__).parent / "flavors_of_cacao.csv"
+DATA_FILE = Path(__file__).parent / "수행평가.csv"
 
 
 @st.cache_data
