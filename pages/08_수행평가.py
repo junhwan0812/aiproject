@@ -43,15 +43,20 @@ with st.expander("🍫 초콜릿 데이터 알아보기", expanded=True):
 # 3. 한글 번역 사전
 # ==================================================
 
+# 국가 및 지역 이름을 영어에서 한글로 번역합니다.
 국가번역 = {
+    # 유럽
     "France": "프랑스",
     "U.S.A.": "미국",
     "U.S.A": "미국",
+    "USA": "미국",
     "United States": "미국",
     "U.K.": "영국",
     "United Kingdom": "영국",
-    "South Korea": "대한민국",
-    "Japan": "일본",
+    "England": "잉글랜드",
+    "Scotland": "스코틀랜드",
+    "Wales": "웨일스",
+    "Ireland": "아일랜드",
     "Italy": "이탈리아",
     "Germany": "독일",
     "Belgium": "벨기에",
@@ -60,23 +65,46 @@ with st.expander("🍫 초콜릿 데이터 알아보기", expanded=True):
     "Spain": "스페인",
     "Portugal": "포르투갈",
     "Austria": "오스트리아",
-    "Canada": "캐나다",
-    "Australia": "호주",
-    "New Zealand": "뉴질랜드",
-    "Brazil": "브라질",
-    "Peru": "페루",
-    "Ecuador": "에콰도르",
-    "Venezuela": "베네수엘라",
-    "Colombia": "콜롬비아",
-    "Bolivia": "볼리비아",
-    "Argentina": "아르헨티나",
-    "Chile": "칠레",
+    "Denmark": "덴마크",
+    "Sweden": "스웨덴",
+    "Finland": "핀란드",
+    "Norway": "노르웨이",
+    "Poland": "폴란드",
+    "Hungary": "헝가리",
+    "Czech Republic": "체코",
+    "Czechia": "체코",
+    "Lithuania": "리투아니아",
+    "Iceland": "아이슬란드",
+    "Russia": "러시아",
+    "Israel": "이스라엘",
+
+    # 아시아
+    "South Korea": "대한민국",
+    "Korea": "대한민국",
+    "Japan": "일본",
+    "China": "중국",
+    "India": "인도",
+    "Vietnam": "베트남",
+    "Indonesia": "인도네시아",
+    "Malaysia": "말레이시아",
+    "Philippines": "필리핀",
+    "Papua New Guinea": "파푸아뉴기니",
+    "Singapore": "싱가포르",
+    "Thailand": "태국",
+    "Sri Lanka": "스리랑카",
+    "Taiwan": "대만",
+    "Burma": "미얀마",
+    "Myanmar": "미얀마",
+
+    # 북아메리카 및 중앙아메리카
     "Mexico": "멕시코",
     "Guatemala": "과테말라",
     "Honduras": "온두라스",
     "Nicaragua": "니카라과",
     "Costa Rica": "코스타리카",
     "El Salvador": "엘살바도르",
+    "Belize": "벨리즈",
+    "Panama": "파나마",
     "Dominican Republic": "도미니카공화국",
     "Domincan Republic": "도미니카공화국",
     "Dominican Rep.": "도미니카공화국",
@@ -89,49 +117,66 @@ with st.expander("🍫 초콜릿 데이터 알아보기", expanded=True):
     "Tobago": "토바고",
     "Grenada": "그레나다",
     "St. Lucia": "세인트루시아",
+    "Martinique": "마르티니크",
+
+    # 남아메리카
+    "Brazil": "브라질",
+    "Peru": "페루",
+    "Ecuador": "에콰도르",
+    "Venezuela": "베네수엘라",
+    "Colombia": "콜롬비아",
+    "Bolivia": "볼리비아",
+    "Argentina": "아르헨티나",
+    "Chile": "칠레",
+    "Suriname": "수리남",
+    "Guyana": "가이아나",
+    "French Guiana": "프랑스령 기아나",
+
+    # 아프리카
     "Ghana": "가나",
     "Madagascar": "마다가스카르",
     "Ivory Coast": "코트디부아르",
+    "Cote d'Ivoire": "코트디부아르",
+    "Côte d'Ivoire": "코트디부아르",
     "Nigeria": "나이지리아",
     "Tanzania": "탄자니아",
     "Uganda": "우간다",
     "Cameroon": "카메룬",
     "Congo": "콩고",
-    "Sao Tome": "상투메",
     "Sao Tome & Principe": "상투메 프린시페",
+    "Sao Tome": "상투메",
+    "São Tomé": "상투메",
     "Togo": "토고",
     "Liberia": "라이베리아",
     "South Africa": "남아프리카공화국",
-    "Vietnam": "베트남",
-    "India": "인도",
-    "Indonesia": "인도네시아",
-    "Malaysia": "말레이시아",
-    "Philippines": "필리핀",
-    "Papua New Guinea": "파푸아뉴기니",
+    "Central African Republic": "중앙아프리카공화국",
+    "Democratic Republic of the Congo": "콩고민주공화국",
+
+    # 오세아니아
+    "Australia": "호주",
+    "New Zealand": "뉴질랜드",
     "Fiji": "피지",
     "Samoa": "사모아",
     "Solomon Islands": "솔로몬제도",
     "Vanuatu": "바누아투",
-    "China": "중국",
-    "Singapore": "싱가포르",
-    "Russia": "러시아",
-    "Ireland": "아일랜드",
-    "Denmark": "덴마크",
-    "Sweden": "스웨덴",
-    "Finland": "핀란드",
-    "Norway": "노르웨이",
-    "Poland": "폴란드",
-    "Hungary": "헝가리",
-    "Czech Republic": "체코",
-    "Lithuania": "리투아니아",
-    "Iceland": "아이슬란드",
-    "Israel": "이스라엘",
-    "Scotland": "스코틀랜드",
-    "Wales": "웨일스",
-    "Martinique": "마르티니크",
-    "Suriname": "수리남",
-    "Burma": "미얀마"
+
+    # 지역명 및 기타 표기
+    "South America": "남아메리카",
+    "Central America": "중앙아메리카",
+    "North America": "북아메리카",
+    "West Africa": "서아프리카",
+    "East Africa": "동아프리카",
+    "Africa": "아프리카",
+    "Asia": "아시아",
+    "Caribbean": "카리브해 지역",
+    "Carribean": "카리브해 지역",
+    "Pacific": "태평양 지역",
+    "Various": "여러 지역",
+    "Blend": "혼합",
+    "Mixed": "혼합",
+    "Unknown": "알 수 없음"
 }
+
 
 콩종류번역 = {
     "Criollo": "크리올로",
@@ -147,6 +192,7 @@ with st.expander("🍫 초콜릿 데이터 알아보기", expanded=True):
     "EET": "EET"
 }
 
+
 열이름번역 = {
     "회사": "제조 회사",
     "제품/원산지명": "제품명 또는 세부 원산지",
@@ -161,6 +207,12 @@ with st.expander("🍫 초콜릿 데이터 알아보기", expanded=True):
 
 
 def 번역하기(value, dictionary):
+    """
+    값이 번역 사전에 있으면 한글로 번역합니다.
+    여러 국가가 함께 적혀 있으면 각 국가명을 번역합니다.
+    번역 사전에 없는 이름은 원문 그대로 표시합니다.
+    """
+
     if pd.isna(value):
         return "정보 없음"
 
@@ -169,6 +221,7 @@ def 번역하기(value, dictionary):
     if value in dictionary:
         return dictionary[value]
 
+    # 긴 이름부터 번역해 짧은 이름이 먼저 바뀌는 문제를 방지합니다.
     for eng, kor in sorted(
         dictionary.items(),
         key=lambda x: len(x[0]),
@@ -307,6 +360,7 @@ df_kr["콩종류"] = df_kr["콩종류"].apply(
 )
 
 df_kr["회사"] = df_kr["회사"].fillna("정보 없음")
+
 df_kr["제품/원산지명"] = (
     df_kr["제품/원산지명"].fillna("정보 없음")
 )
