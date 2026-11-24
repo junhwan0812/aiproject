@@ -150,7 +150,7 @@ st.write(
 @st.cache_data
 def load_data():
     df = pd.read_csv(
-        "수행평가.csv",
+        "flavors_of_cacao.csv",
         header=None,
         encoding="utf-8"
     )
