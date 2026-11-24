@@ -5,3 +5,4 @@ streamlit-folium>=0.20.0
 pandas
 plotly
 scikit-learn
+matplotlib
